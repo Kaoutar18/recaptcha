@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register with reCAPTCHA</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<h2>Register</h2>
+
+<form th:action="@{/register}" th:object="${user}" method="post" onsubmit="return validateForm();">
+    <label>Username:</label>
+    <input type="text" th:field="*{username}" required/><br/><br/>
+
+    <label>Password:</label>
+    <input type="password" th:field="*{password}" required/><br/><br/>
+
+    <!-- reCAPTCHA -->
+    <div class="g-recaptcha" th:attr="data-sitekey=${@environment.getProperty('recaptcha.site-key')}"></div><br/>
+
+    <input type="hidden" th:field="*{captchaResponse}" id="g-recaptcha-response" required/>
+
+    <button type="submit">Register</button>
+
+    <!-- Affichage des messages d'erreur ou de succès -->
+    <p th:if="${captchaError}" th:text="${captchaError}"></p>
+    <p th:if="${successMessage}" th:text="${successMessage}"></p>
+</form>
+
+<script>
+    function validateForm() {
+        var response = grecaptcha.getResponse(); // Récupère la réponse de reCAPTCHA
+        if (response.length === 0) {
+            alert("Please verify that you are not a robot."); // Alerte si l'utilisateur n'a pas coché
+            return false; // Empêche l'envoi du formulaire
+        }
+        return true; // Autorise l'envoi du formulaire
+    }
+</script>
+
+</body>
+</html>
